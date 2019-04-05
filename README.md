@@ -2,7 +2,7 @@
 
 ![](images/repo-cover.png)
 
-**Session Objective:**  Introduction to cloud native development using containers and Kubernetes. We will begin with abn overview of the "what" and "why" of Docker containers and an overview of container orchestration with Kubernetes. We will then discuss the develpment process to build containerized applications and deploy them to the cloud. In addition to lecture and discussion will be some hands on labs to demonstrate how to install the required tools and see how containers work in practice with IBM Cloud Private. Attending this session will give you the basic skills to explore and experiment with containers to determine how they best fit your use cases, or just to have fun with them!
+**Session Objective:**  Introduction to cloud native development using containers and Kubernetes. We will begin with an overview of the "what" and "why" of Docker containers and an overview of container orchestration with Kubernetes. We will then discuss the develpment process to build containerized applications and deploy them to the cloud. In addition to lecture and discussion will be some hands on labs to demonstrate how to install the required tools and see how containers work in practice with IBM Cloud Private. Attending this session will give you the basic skills to explore and experiment with containers to determine how they best fit your use cases, or just to have fun with them!
 
 ---
 
