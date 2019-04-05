@@ -1,8 +1,8 @@
 
 
-![](images/repo-cover.jpg)
+![](images/repo-cover.png)
 
-**Session Objective:**  introduction to containers and Kubernetes. Overview of the "what" and "why" of Docker containers and an overview of container orchestration with Kubernetes. In addition to lecture and discussion will be some hands on labs to demonstrate how to install the required tools and see how containers work in practice with IBM Cloud Private. Attending this session will give you the basic skills to explore and experiment with containers to determine how they best fit your use cases, or just to have fun with them!
+**Session Objective:**  Introduction to cloud native development using containers and Kubernetes. We will begin with abn overview of the "what" and "why" of Docker containers and an overview of container orchestration with Kubernetes. We will then discuss the develpment process to build containerized applications and deploy them to the cloud. In addition to lecture and discussion will be some hands on labs to demonstrate how to install the required tools and see how containers work in practice with IBM Cloud Private. Attending this session will give you the basic skills to explore and experiment with containers to determine how they best fit your use cases, or just to have fun with them!
 
 ---
 
@@ -14,7 +14,7 @@ In this segment we'll talk through the basics:
 - What are "containers" and where did they come from?
 - What's the difference between containers and Virtual machines?
 - What's "container orchestration" and what's [Kubernetes](https://kubernetes.io/) all about?
-- How does this change things for applications today?
+- Overview of a few development tools that help make it easier to develop cloud native applications.  
 
 **Exercises**
 
@@ -30,8 +30,7 @@ In this segment we'll talk through the basics:
 **Deploying an application on kubernetes**
 
 - [lab 05](lab05/README.md): Containerize and deploy a node.js application
-- [lab 06](lab06/README.md): Deploy a multi-container application
-
+- [lab 06](lab06/README.md): Introduction to the Microclimate development tool 
 
 **Questions?**
 
