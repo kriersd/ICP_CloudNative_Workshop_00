@@ -1,54 +1,41 @@
 
-## Containerize a simple node.js process
+## Getting familiar with Kubernetes
 
-In this section we'll create a simple node.js process and wrap it in a docker container.
+In this section get a little familiar with Kubernetes by looking around the environment.
 
-Create a new directory to work from 
-```
-$ mkdir meetup
-$ cd meetup
-```
+We'll use [IBM Cloud Private](https://www.ibm.com/cloud/learn/what-is-private-cloud) (ICP) as our Kubernetes cluster for this session. ICP is a commercial implementation of a Kubernetes cluster and has a wide variety of extra functionality built on top of Kubernetes. In this session though, we'll focus on the kubernetes fundamentals using ICP. 
 
-1. In the meetup directory, create server.js using your preferred editor and add the following code:
-```
-  var http = require('http');
+![](../images/cluster-diagram.jpg)
 
-  var handleRequest = function(request, response) {
-  console.log('Received request for URL: ' + request.url);
-  response.writeHead(200);
-  response.end('Hello World!');
-  };
-  var www = http.createServer(handleRequest);
-  www.listen(8080);
-```
 
-2. In the meetup directory, create a file named "Dockerfile"... (nope, it doesn't need an extension) and enter the following code:
 
-```
-  FROM node:6.9.2
-  EXPOSE 8080
-  COPY server.js .
-  CMD node server.js
-```
+We can connect to our cluster with the browser and with the "kubectl" command line client. We'll spend most of our time with the command line client learning our kubernetes basics, but we'll use browser interface as well.
 
-3. Build the Docker image
-```
-$ docker build -t mynode:v1.0 .
-```
+First make sure you've checked in with a proctor and have a username and password to log into the cluster.  We'll log into the system via our browser and get our kubectl command line client configured.  
 
-4. Run the image and test it locally
+Start by going to the login page, and entering your username and password.
+
+![](../images/login.jpg)
+
+In the upper right corner click on the icon of a user and select configure client.
+
+![](../images/config.jpg)
+
+
+Click the copy button to capture details for configuring the kubectl client and paste the results at the command line.
+
+![](../images/config-box.jpg)
+
+
+The kubectl command line client should be configured.. just to check type
 
 ```
-$ docker run --rm -d -p 8080:8080 --name mynode-sample  mynode:v1.0
+
+$ kubectl get deploy --namespace=default
+
 ```
 
-  For a quick test of the container running locally on your machine, In your browser, access http://localhost:8080.  
-
-5. Stop the locally running container
-
-```  
-$ docker stop mynode-sample
-```
+Now you're connected to the cluster!
 
 
 ---

@@ -1,153 +1,76 @@
 
+## Containerizing a process for deployment
 
+**In this section**, you will learn how to upload a docker image Dockerhub and deploy it to our cluster. 
 
-## Deploying a Container to Kubernetes
+Development processes such as these are typically sped up with enhancements such as automated DevOps processes, however this is a helpful to get a fundamental look at how some of the underlying parts of the process work.
 
-**In this section**, we'll run our first container on Kubernetes. We'll work with a docker image that already has content in it. One of the things that makes containers easy and helpful is you can obtain images with software that's been pre-packaged and ready to run... that simplifies the usual effort to install and configure software.
+## Task 1: Create a simple node.js process
 
+Way back in [lab 02](lab02/README.md) we built an image with a node.js process in it and ran it in the Docker runtime on our local machines...remember that? Well now, we'll move a copy of that image to our Dockerhub account so its available to run in our IBM Cloud Private Cluster.
 
+First lets tag our image. 
+```
 
-## Task 1: Deploy an Nginx server
-
-In this section we'll deploy an Nginx web server...
-
+$ docker tag mynode:v1.0 irvingr/mynode:v1.0
+$ docker images
 
 ```
-$ kubectl run my-deploy --image=nginx:1.7.9 --port=80 --namespace=user99-ns
 
-deployment "my-deploy" created
-$
-$ kubectl get deploy --namespace=user99-ns
-NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-my-deploy   1         1         1            1           1m
+"Tagging" the image tells it where to go when we "push" to a remote repository. By default it will upload to the repository at hub.docker.com (unless syou specify otherwise). 
+
+Now we'll upload the image with "docker push":
+```
+$ docker push irvingr/mynode:v1.0
+```
+
+From here, if you check your browser and look at the list of available tags in the repositoy we created, you should see your new image!
+
+---
+
+From here, we can run the image on our kubernetes cluster.
+
+```
+$ kubectl run hello-node --image=irvingr/mynode:v1.0 --port=8080 --namespace=user99-ns
+deployment "hello-node" created
+
+$ kubectl get deployment --namespace=user99-ns
+NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+hello-node   1         1         1            1           29s
 $
 $ kubectl get pods --namespace=user99-ns
-NAME                         READY     STATUS        RESTARTS   AGE
-my-deploy-dbc4b8b5d-krhwh    1/1       Running       0          1m
-
-```
-
-Now we have a container running...we'll need to provide access to the server by creating a [service](https://kubernetes.io/docs/concepts/services-networking/service/) to make a port available.
-
-```
-$ kubectl expose deployment my-deploy  --type=NodePort --namespace=user99-ns
-service "my-deploy" exposed
-$
-$ kubectl get service --namespace=user99-ns
-NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP          1d
-my-deploy    LoadBalancer   10.111.227.3    <pending>     80:30839/TCP     1m
-
-
-```
-
-The port is open, so the nginx server should be available... now, we'll use the ip of the cluster, and the port we've exposed to access the server.
-
-Then we can assemble the url as http:// + [icp master ip] + ":" + [port assigned by the service].
-If the ip address for the master of our cluster is 192.168.99.100 then we should use http://192.168.99.100:30839 to access our new Nginx server.
-
-```
-$ curl http://192.168.99.100:30839
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-
-...
-</html>
-```
-
-## Task 2: Scale the Nginx deployment and test its resilience
-
-The server is deployed, but what if we get a lot more traffic than we expected? Fortunately we can manage more instances of our Nginx pods to handle the additional traffic. We'll use the kubectl client to scale our deployment so it has 5 copies running instead of just one.
-
-```
-$ kubectl scale deploy my-deploy --replicas=5 --namespace=user99-ns
-deployment "my-deploy" scaled
-$
-$ kubectl get deploy --namespace=user99-ns
-NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-my-deploy   5         5         5            5           58s
-$
-$ kubectl get pods
 NAME                         READY     STATUS    RESTARTS   AGE
-my-deploy-6fd857889c-8pm6x   1/1       Running   0          50s
-my-deploy-6fd857889c-ht7pv   1/1       Running   0          1m
-my-deploy-6fd857889c-kkx5k   1/1       Running   0          50s
-my-deploy-6fd857889c-nmccq   1/1       Running   0          50s
-my-deploy-6fd857889c-xqvqz   1/1       Running   0          50s
+hello-node-77c96d485-qstmk   1/1       Running   0          3m
 
 ```
 
-Our workloads on Kubernetes are quite resilient if we let the system handle things for us. Let's see how resilient our workload is by deleting a few pods!
-
-```
-$ kubectl delete pod my-deploy-6fd857889c-xqvqz my-deploy-6fd857889c-nmccq --namespace=user99-ns
-pod "my-deploy-6fd857889c-xqvqz" deleted
-pod "my-deploy-6fd857889c-nmccq" deleted
+With the container running, we'll need to expose the applications port before we can access to application.
 
 
 ```
-The pods are deleted as requested... but for both deleted pods, a new pod has been created in its place! Best of all... the service continues to keep track of all the appropriate pods and route network traffic to them as soon as they're available.
-
-```
-$ kubectl get pods --namespace=user99-ns
-NAME                         READY     STATUS        RESTARTS   AGE
-my-deploy-6fd857889c-8nvf5   1/1       Running       0          12s
-my-deploy-6fd857889c-8pm6x   1/1       Running       0          3m
-my-deploy-6fd857889c-dzwlf   1/1       Running       0          12s
-my-deploy-6fd857889c-ht7pv   1/1       Running       0          4m
-my-deploy-6fd857889c-kkx5k   1/1       Running       0          3m
-my-deploy-6fd857889c-nmccq   0/1       Terminating   0          3m
-my-deploy-6fd857889c-xqvqz   0/1       Terminating   0          3m
-```
-
-
-## Task 3: Update the pod with a new version of the software
-
-It's great that the system scales now... but what happens when we have new versions of our software to deploy? To do that we can simply update the existing deployment and tell it that there's a new version of the image currently in use that should be rolled out.  
-
-```
-$ kubectl set image deployment/my-deploy my-deploy=nginx:1.9 --namespace=user99-ns
-deployment "my-deploy" image updated
+$ kubectl expose deployment hello-node --type=NodePort  --namespace=user99-ns
+service "hello-node" exposed
+$ kubectl get services
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+hello-node   NodePort    10.97.250.220   <none>        8080:32644/TCP   4s
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          5h
 
 ```
 
-When we tell kubernetes that our deployment needs to update a new container image it terminates the old versions while rolling out the new version, and ensures that the service will re-route traffic to the proper pods.
+Now that the application is accessible via an external port, we're able to gain access to the services with curl
+
+```  
+$ kubectl get service --namespace=user99-ns
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+hello-node   NodePort    10.97.250.220   <none>        8080:32644/TCP   1m
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          5h
+
 
 ```
-
-$ kubectl get pods --namespace=user99-ns
-NAME                         READY     STATUS        RESTARTS   AGE
-my-deploy-6fd857889c-8nvf5   0/1       Terminating   0          17m
-my-deploy-6fd857889c-8pm6x   0/1       Terminating   0          20m
-my-deploy-6fd857889c-dzwlf   0/1       Terminating   0          17m
-my-deploy-6fd857889c-ht7pv   0/1       Terminating   0          21m
-my-deploy-6fd857889c-kkx5k   0/1       Terminating   0          20m
-my-deploy-857bc7b484-4j684   1/1       Running       0          11s
-my-deploy-857bc7b484-mx75q   1/1       Running       0          12s
-my-deploy-857bc7b484-phfct   1/1       Running       0          10s
-my-deploy-857bc7b484-ttspq   1/1       Running       0          13s
-my-deploy-857bc7b484-w27c2   1/1       Running       0          13s
-
-```
-
-To validate that the proper pod is running, do a 'describe' on the deployment or one of the pods and see what image is currently in use...
-
-Let's save the results of our deployment, just in case we want to recreate it
-
-```
-kubectl get deployment my-deploy -o=yaml --export --namespace=user99-ns > ./apache-deploy.yaml
-```
-
-Now that we've gotten a bit of a feel for working with Kubernetes we can clean up and move on to the next thing!
-
-```
-$ kubectl delete deployment my-deploy --namespace=user99-ns
-deployment "my-deploy" deleted
-
-```
+Then we can assemble the url as http:// + [icp master ip] + ":" + [port assigned by the service].
+If the ip address for the master of our cluster is 192.168.99.100 then we should use http://192.168.99.100:30839 to access our new service.
 
 
+We've built and run our first container on Kubernetes!
 
 ---

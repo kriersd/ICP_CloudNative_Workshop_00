@@ -19,18 +19,16 @@ In this segment we'll talk through the basics:
 **Exercises**
 
 - [lab 00](lab00/README.md): Creating a working environment
-- [lab 01](lab01/README.md): Running your first docker container
-- [lab 02](lab02/README.md): Building your own docker container
+- [lab 01](lab01/README.md): Building your own docker container
 
 **Getting Started with kubernetes**
 
-- [lab 03](lab03/README.md): Running Kubernetes with IBM Cloud Private
-- [lab 04](lab04/README.md): Deploying a container to Kubernetes
+- [lab 02](lab02/README.md): Running Kubernetes with IBM Cloud Private
+- [lab 03](lab03/README.md): Deploying a container to Kubernetes
 
 **Deploying an application on kubernetes**
 
-- [lab 05](lab05/README.md): Containerize and deploy a node.js application
-- [lab 06](lab06/README.md): Introduction to the Microclimate development tool 
+- [lab 04](lab04/README.md): Containerize and deploy a node.js application
 
 **Questions?**
 
