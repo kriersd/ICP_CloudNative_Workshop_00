@@ -5,7 +5,7 @@ In this section we'll install the Docker engine so we can run containers locally
 
 **Installing the Docker engine**
 
-First, we'll get the docker engine installed on our local machine. That will enable us to run some containers locally and begin to understand them better. 
+First, we'll get the docker engine installed on our local machine. That will enable us to run some containers locally and begin to understand them better.
 
 If you're [hearing about Docker for the first time](https://www.docker.com/what-container), the Docker website is a great place to get context.
 
@@ -28,7 +28,7 @@ This message shows that your installation appears to be working correctly.
 
 **Using IBM Cloud Private**
 
-The environment we'll use for this session is an IBM Cloud Private cluster. 
+The environment we'll use for this session is an IBM Cloud Private cluster.
 
 [IBM Cloud Private](https://www.youtube.com/watch?v=yzXA3qhfaq0) is an application platform for developing and managing on-premises, containerized applications. It is an integrated environment for managing containers that includes the container orchestrator Kubernetes, a private image repository, a management console, and monitoring frameworks.
 
@@ -37,16 +37,35 @@ Make sure you remember the number next to your name on the sign-up sheet... that
 
 We'll also need to [install the kubectl client](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl)... for this tutorial we'll install the current version of kubectl ... download either the [Mac](https://dl.k8s.io/v1.10.0/kubernetes-client-darwin-amd64.tar.gz), [Linux](https://dl.k8s.io/v1.10.0/kubernetes-client-linux-amd64.tar.gz) or [Windows](https://dl.k8s.io/v1.10.0/kubernetes-client-windows-amd64.tar.gz) binaries appropriate for your system and make sure its available in your path.
 
-If you're using mac or linux, you'll need to make sure the binary is executeable using 
+If you're using mac or linux, you'll need to make sure the binary is executeable using
 ```
 $chmod +x kubectl
-$
+
 $cp ./kubectl /usr/local/bin/kubectl
 ```
 
 Now that its executeable, you can copy it in your path by moving it to /usr/local/bin
 
-Next, lets check that kubectl is installed... you should be ready to go!
+Next, lets check that kubectl is installed... You should be able to see the help menu for the kubectl command.
+
+```
+$kubectl help
+
+```
+
+If successful you should see something like this in the terminal window.
+
+```
+kubectl controls the Kubernetes cluster manager.
+
+Find more information at: https://kubernetes.io/docs/reference/kubectl/overview/
+
+Basic Commands (Beginner):
+  create         Create a resource from a file or from stdin.
+  expose         Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service
+  run            Run a particular image on the cluster
+  set            Set specific features on objects
+  ```
 
 
 ---
