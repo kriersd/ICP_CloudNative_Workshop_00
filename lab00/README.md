@@ -1,5 +1,7 @@
 
 
+![](images/lab00-cover.png)
+
 ### Creating a Working Environment
 In this section we'll install the Docker engine so we can run containers locally. We'll also install the kubectl client to connect to the IBM Cloud Private (ICP) cluster and run the exercises.
 
