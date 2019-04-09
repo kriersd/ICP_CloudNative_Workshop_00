@@ -39,7 +39,7 @@ __8. 	Paste the block of commands into the terminal window and verify that they 
 **The kubectl command line interface is now configured to communicate with the IBM Cloud Private runtime.**
 
 
-##Running a few kubectl commands
+## Running a few kubectl commands
 
 __1. 	Check the Client and Kubernetes version with this command. 
 
@@ -605,7 +605,7 @@ $ kubectl -n kube-system get pod k8s-master-192.168.142.140 -o json
 ```
 ***Note that master node runs three main components of Kubernetes. 1. API Server. 2. Scheduler, and 3. Controller Manager.***
 
-##Kubernetes etcd database
+## Kubernetes etcd database
 
 __6. 	The fourth component of Kubernetes is the etcd database that holds the state of the cluster. The etcd container runs in a separate pod. Run the following kubectl -n kube-system get pods | grep -i etcd 
 
@@ -819,7 +819,7 @@ __4. 	Notice that the pod is no longer displayed, and it was not restarted autom
 
 * We did not define higher level of abstraction that would have restarted the pod automatically such as DaemonSet or ReplicaSet which looks after a pod and restarts it automatically.
 
-##Create Replica Set
+## Create Replica Set
 
 ***We will create a replica set to manage this pod automatically.***
 
@@ -929,7 +929,7 @@ ghost-rgcmm                                      1/1       Running   0          
 
 * Since we defined a replica set of 5, Kubernetes keeps an eye on the number of running pods and if any pod stops or disappears, it will start another pod automatically. The scheduler balances the creation of pods in worker nodes based on the resource utilization of the workers.
 
-##Create Service to expose the application
+## Create Service to expose the application
 
 * In the previous exercise the application was isolated to the Node IP address assigned to a pod. Also, there was no connection between outside world and the application residing in the pod.
 * Next, we will create a service to route the traffic to the application running inside a pod.
@@ -996,11 +996,14 @@ __3. 	Open a browser window and try the URL http://CLUSTER-IOP-Address:NodePort 
 * If we had an environment with multiple nodes, the proxy server would be running on all nodes, you could use any of the hosts to reach to the proper ghost pod. 
 * **Note:** The service routes the traffic from external world to the pod in the cluster through iptables.
 
+***
 ==Question:== ***If every node is acting like a proxy server, why do we need a dedicated proxy server?***
 
 ==Answer:== ***Normally, all worker nodes are shielded from the outside world. In such cases, the only way to reach worker nodes is through the designated proxy server.**
+***
 
-##Scale up / Scale down application
+## Scale up / Scale down application
+
 We can use the kubectl command line to scale the number of replicas up or down. 
 
 First, let's get some information on the replica set for Ghost. 
@@ -1066,7 +1069,7 @@ ghost-f4cf6                                      1/1       Running   0          
 ghost-kpqdd                                      1/1       Running   0          4s
 ghost-n26kq                                      1/1       Running   0          4s
 ```
-##Delete Service and Replica Set
+## Delete Service and Replica Set
 
 __1. 	Run the following commands to delete the service and then delete the replica set. Note that the pods are deleted automatically. 
 
