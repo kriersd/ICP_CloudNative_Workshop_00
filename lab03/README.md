@@ -58,7 +58,7 @@ __3. 	List all the nodes in our cluster with this command.
 ```	
 $ kubectl get nodes
 ```
-**Output will look simular to this:**
+**Output will look similar to this:**
 
 ```
 $ kubectl get nodes
@@ -75,7 +75,7 @@ __4. 	You can also use kubectl describe node command to get more information abo
 $ kubectl describe node
 ```
 
-**Output of the command will look simular to this.**
+**Output of the command will look similar to this.**
 
 ```
 ibmdemo@ubuntuvm1:~$ kubectl describe node 
@@ -160,7 +160,7 @@ __7. 	Run command kubectl get pods. Note: The name space set when logging into k
 $ kubectl get pods
 ```
 
-**Output will look simular to this:**
+**Output will look similar to this:**
 
 ```
 NAME                                             READY     STATUS    RESTARTS   AGE
@@ -175,7 +175,7 @@ __8. 	Get the list of running pods in kube-system namespace.
 $ kubectl get pods -n kube-system
 ```
 
-**Output will look simular to this:**
+**Output will look similar to this:**
 
 ```
 NAME                                                           READY     STATUS      RESTARTS   AGE
@@ -268,7 +268,7 @@ __10. 	Run command kubectl get the nodes
 kubectl get nodes
 ```
 
-***output should look simular to the following***
+***output should look similar to the following***
 
 ```
 NAME              STATUS    ROLES                                 AGE       VERSION
@@ -281,7 +281,7 @@ __11. 	Run the following command kubectl -n kube-system get pods | grep k8s-mast
 kubectl -n kube-system get pods | grep k8s-master
 ```
 
-***Output will look simular to the following***
+***Output will look similar to the following***
 
 ```
 k8s-master-192.168.142.140                                     3/3       Running     49         25d
@@ -296,7 +296,7 @@ __12. 	Let's check the containers inside this pod k8s-master-192.168.142.140. Ru
 ```
 kubectl -n kube-system get pod k8s-master-192.168.142.140 
 ```
-***Output will look simular to the following.***
+***Output will look similar to the following.***
  
 ```
 $ kubectl -n kube-system get pod k8s-master-192.168.142.140 
@@ -308,7 +308,7 @@ __5. 	The kubectl is a client that sends REST API to the API server and parses t
 ```
 $ kubectl -n kube-system get pod k8s-master-192.168.142.140 -o json
 ```
-***Output will look simular to the following.***
+***Output will look similar to the following.***
 
 ```
 {
@@ -612,7 +612,7 @@ __6. 	The fourth component of Kubernetes is the etcd database that holds the sta
 ```
 $ kubectl -n kube-system get pods | grep -i etcd 
 ```
-***Output will look simular to this below***
+***Output will look similar to this below***
 
 ```
 k8s-etcd-192.168.142.140                                       1/1       Running     10         25d
@@ -786,158 +786,345 @@ ghost                                            1/1       Running   0          
 
 __5. Minimize your screen and open a Web Browser. 
 
-__6. In the address bar, type: http://<yourIP>:2368. 
+__6. In the address bar, type: http://YOUR-CLUSTER-IP-ADDRESS:2368
 
-* ***NOTE: Enter the IP address from the previous step.***
+* ***NOTE: Enter the Cluster IP address from the previous step.***
 
 **You should see the following web page**
 
-![/images/lab03/ghost.png](images/lab03/ghost.png)
-*****
+![](../images/lab03/ghost.png)
 
+## Delete the POD
 
-ibmdemo@ubuntuvm1:~/student/lab3$ kubectl get pod | grep ghost 
-NAME                                             READY     STATUS    RESTARTS   AGE
-ghost                                            1/1       Running   0          2m
+__1. 	Switch to the command window and navigate to the lab03 directory
 
-
+__2.  Run kubectl delete pod command to remove the pod
 
 ```
-$ kubectl run my-deploy --image=nginx:1.7.9 --port=80 --namespace=user99-ns
-
-deployment "my-deploy" created
-$
-$ kubectl get deploy --namespace=user99-ns
-NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-my-deploy   1         1         1            1           1m
-$
-$ kubectl get pods --namespace=user99-ns
-NAME                         READY     STATUS        RESTARTS   AGE
-my-deploy-dbc4b8b5d-krhwh    1/1       Running       0          1m
-
+$ kubectl delete pod ghost
 ```
 
-Now we have a container running...we'll need to provide access to the server by creating a [service](https://kubernetes.io/docs/concepts/services-networking/service/) to make a port available.
+**You should see this message**
 
 ```
-$ kubectl expose deployment my-deploy  --type=NodePort --namespace=user99-ns
-service "my-deploy" exposed
-$
-$ kubectl get service --namespace=user99-ns
-NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP          1d
-my-deploy    LoadBalancer   10.111.227.3    <pending>     80:30839/TCP     1m
-
-
+pod "ghost" deleted
 ```
 
-The port is open, so the nginx server should be available... now, we'll use the ip of the cluster, and the port we've exposed to access the server.
+__3. 	Run command to check kubectl get pod | grep ghost 
+```
+$ kubectl get pod | grep ghost
+```
+                     
+__4. 	Notice that the pod is no longer displayed, and it was not restarted automatically.
 
-Then we can assemble the url as http:// + [icp master ip] + ":" + [port assigned by the service].
-If the ip address for the master of our cluster is 192.168.99.100 then we should use http://192.168.99.100:30839 to access our new Nginx server.
+* We did not define higher level of abstraction that would have restarted the pod automatically such as DaemonSet or ReplicaSet which looks after a pod and restarts it automatically.
+
+##Create Replica Set
+
+***We will create a replica set to manage this pod automatically.***
+
+__1. 	Please review kube02.yaml which creates a replica set. 
 
 ```
-$ curl http://192.168.99.100:30839
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-
-...
-</html>
+cat kube02.yaml 
 ```
 
-## Task 2: Scale the Nginx deployment and test its resilience
-
-The server is deployed, but what if we get a lot more traffic than we expected? Fortunately we can manage more instances of our Nginx pods to handle the additional traffic. We'll use the kubectl client to scale our deployment so it has 5 copies running instead of just one.
+You will see the following, which is the content of the yaml file.
 
 ```
-$ kubectl scale deploy my-deploy --replicas=5 --namespace=user99-ns
-deployment "my-deploy" scaled
-$
-$ kubectl get deploy --namespace=user99-ns
-NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-my-deploy   5         5         5            5           58s
-$
-$ kubectl get pods
-NAME                         READY     STATUS    RESTARTS   AGE
-my-deploy-6fd857889c-8pm6x   1/1       Running   0          50s
-my-deploy-6fd857889c-ht7pv   1/1       Running   0          1m
-my-deploy-6fd857889c-kkx5k   1/1       Running   0          50s
-my-deploy-6fd857889c-nmccq   1/1       Running   0          50s
-my-deploy-6fd857889c-xqvqz   1/1       Running   0          50s
-
+# A simple yaml file to create a replica set
+apiVersion: extensions/v1beta1 
+kind: ReplicaSet
+metadata:
+  name: ghost
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      name: ghost
+      labels:
+        app: ghost
+    spec:
+      containers:
+      - name: ghost
+        image: ghost:1.21.5-alpine
 ```
 
-Our workloads on Kubernetes are quite resilient if we let the system handle things for us. Let's see how resilient our workload is by deleting a few pods!
+* Note that the ReplicaSet is covered in apiVersion of extensions/v2beta1. Also note that the Kubernetes documentation is available at http://kubernetes.io 
+* We use kind as ReplicaSet and the metadata "name: ghost".
+* The metadata also needs to know how to select an application which is defined by the matchLabels selector app: ghost.
+* For the replica set to start an application, it must have a template to start a container. The template is similar to the way we created the ghost container except that it also has labels set to app: ghost, which will be used by the ReplicaSet to manage this container.
+
+__2. 	Run kubectl command to create the replica set. 
 
 ```
-$ kubectl delete pod my-deploy-6fd857889c-xqvqz my-deploy-6fd857889c-nmccq --namespace=user99-ns
-pod "my-deploy-6fd857889c-xqvqz" deleted
-pod "my-deploy-6fd857889c-nmccq" deleted
-
-
+$ kubectl apply  -f  kube02.yaml 
 ```
-The pods are deleted as requested... but for both deleted pods, a new pod has been created in its place! Best of all... the service continues to keep track of all the appropriate pods and route network traffic to them as soon as they're available.
-
+**You should see the following message**
 ```
-$ kubectl get pods --namespace=user99-ns
-NAME                         READY     STATUS        RESTARTS   AGE
-my-deploy-6fd857889c-8nvf5   1/1       Running       0          12s
-my-deploy-6fd857889c-8pm6x   1/1       Running       0          3m
-my-deploy-6fd857889c-dzwlf   1/1       Running       0          12s
-my-deploy-6fd857889c-ht7pv   1/1       Running       0          4m
-my-deploy-6fd857889c-kkx5k   1/1       Running       0          3m
-my-deploy-6fd857889c-nmccq   0/1       Terminating   0          3m
-my-deploy-6fd857889c-xqvqz   0/1       Terminating   0          3m
+replicaset.extensions/ghost created
 ```
 
-
-## Task 3: Update the pod with a new version of the software
-
-It's great that the system scales now... but what happens when we have new versions of our software to deploy? To do that we can simply update the existing deployment and tell it that there's a new version of the image currently in use that should be rolled out.  
+__3. 	Run kubectl command to view the information about the newly created POD.
 
 ```
-$ kubectl set image deployment/my-deploy my-deploy=nginx:1.9 --namespace=user99-ns
-deployment "my-deploy" image updated
+$ kubectl get pods -o wide | grep ghost
+```
+**You should see something similar to this**
+
+```
+ghost-82jgl                                      1/1       Running   0          2m        10.1.139.210   192.168.142.140
+ghost-dbmc7                                      1/1       Running   0          2m        10.1.139.197   192.168.142.140
+ghost-f4cf6                                      1/1       Running   0          2m        10.1.139.217   192.168.142.140
+ghost-h7jkz                                      1/1       Running   0          2m        10.1.139.247   192.168.142.140
+ghost-rgcmm                                      1/1       Running   0          2m        10.1.139.236   192.168.142.140
+```
+
+__4. 	Note that the application is running in five containers and that the IP addresses and the nodes on which they are deployed by the Kubernetes scheduler. 
+
+***NOTE: The IP addresses will likely differ for you.***
+
+__5. 	Now we delete the first pod. Copy and paste the name of your first container (your name will be different) **ghost-82jgl** in the outpud above, and run the following commands in succession o see the process of terminating, container creating and running the container again. 
+
+
+``` 
+$ kubectl get pods| grep ghost 
+
+$ kubectl delete pod ghost-82jgl
+
+$ kubectl get pods| grep ghost 
 
 ```
 
-When we tell kubernetes that our deployment needs to update a new container image it terminates the old versions while rolling out the new version, and ensures that the service will re-route traffic to the proper pods.
+***Tip: Use Up arrow key to quickly repeat the kubectl get pods| grep ghost commands and check the lifecycle of the pod.***
+
+***Output will look similar to this below***
+
+```
+$ kubectl get pods | grep ghost 
+ghost-82jgl                                      1/1       Running   0          3m
+ghost-dbmc7                                      1/1       Running   0          3m
+ghost-f4cf6                                      1/1       Running   0          3m
+ghost-h7jkz                                      1/1       Running   0          3m
+ghost-rgcmm                                      1/1       Running   0          3m
+```
+
+```
+$ kubectl delete pod ghost-82jgl
+pod "ghost-82jgl" deleted
+```
+**Note: Your pod name will be different than the above.**
+
+```
+$ kubectl get pods | grep ghost 
+ghost-dbmc7                                      1/1       Running   0          3m
+ghost-f4cf6                                      1/1       Running   0          3m
+ghost-h6g2c                                      1/1       Running   0          10s
+ghost-h7jkz                                      1/1       Running   0          3m
+ghost-rgcmm                                      1/1       Running   0          3m
+```
+
+* Since we defined a replica set of 5, Kubernetes keeps an eye on the number of running pods and if any pod stops or disappears, it will start another pod automatically. The scheduler balances the creation of pods in worker nodes based on the resource utilization of the workers.
+
+##Create Service to expose the application
+
+* In the previous exercise the application was isolated to the Node IP address assigned to a pod. Also, there was no connection between outside world and the application residing in the pod.
+* Next, we will create a service to route the traffic to the application running inside a pod.
+* The service should be able to find the pod where application is running. It does this by using labels.
+
+__1. 	Review kube03.yaml to create the service. 
+
+```
+$ cat kube03.yaml 
+```
+**Here is the content of the YAML file**
+
+```
+# A simple yaml file to create a service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ghost
+  name: ghost
+spec:
+  selector:
+    app: ghost
+  ports:
+  - port: 2368
+    protocol: TCP
+    targetPort: 2368
+  type: NodePort
+```
+* Note that the service ghost is assigned through a label to app: ghost and port 2368 is assigned a higher port on the host using type: NodePort.
+
+__2. 	Create the service using kubectl apply -f kube03.yaml then check the service via kubectl get svc 
+
+```
+$ kubectl apply -f kube03.yaml 
+```
+
+**If successful, you should see this message**
+
+```
+service/ghost created
+```
+**Just to verify that the service was actually created, run the Kubectl command to get the services**
+
+```
+$ kubectl get svc
+```
+
+**The output should look similar to this**
+
+```
+NAME      TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
+ghost     NodePort   10.0.0.77    <none>        2368:32400/TCP   7s
+```
+
+* Note the node port (32400 in this case), as it will be different in your case.
+
+__3. 	Open a browser window and try the URL http://CLUSTER-IOP-Address:NodePort and substitute the CLUSTER-IP-ADDRESS & NodePort with the ip address & port number from the kubectl get svc command. 
+
+**You should now see the landing page for the Ghost App**
+
+![](../images/lab03/ghost.png)
+
+* If we had an environment with multiple nodes, the proxy server would be running on all nodes, you could use any of the hosts to reach to the proper ghost pod. 
+* **Note:** The service routes the traffic from external world to the pod in the cluster through iptables.
+
+==Question:== ***If every node is acting like a proxy server, why do we need a dedicated proxy server?***
+
+==Answer:== ***Normally, all worker nodes are shielded from the outside world. In such cases, the only way to reach worker nodes is through the designated proxy server.**
+
+##Scale up / Scale down application
+We can use the kubectl command line to scale the number of replicas up or down. 
+
+First, let's get some information on the replica set for Ghost. 
+
+__1. 	Run kubectl get rs | grep ghost
+```
+$ kubectl get rs | grep ghost
+```
+**Here we can see that there are 5 replicas in this replica set**
+
+```
+ghost                                      5         5         5         10m
+```
+
+* Note that the desired number of replica sets is 5, current and ready are also 5. 
+* We can scale this down to 1.
+
+__2.  Run kubectl command to scale the ghost replica set down to 1. 
+
+```
+$ kubectl scale rs ghost --replicas=1 
+```
+**You should see this as an indication that your command scaled the replica set down to 1.**
+
+```
+replicaset.extensions/ghost scaled
+```
+
+__3.  Now run the command to get the pods and grep on ghost
+
+```
+$ kubectl get pods | grep ghost 
+```
+
+**You should see something similar to the following, which indicates that their is now only 1 replica desired and 1 running.**
+
+```
+ghost-f4cf6                                      1/1       Running   0          11m
+```
+
+* Note that the replica set is now reduced to 1.
+
+
+__4. 	Let's scale this up to 3. Run the kubectl command kubectl to scale again, but this time let's scale it up. 
+
+```
+$ kubectl scale rs ghost --replicas=3 
+```
+**We ran the same command as before, but this time we scaled it up to 3**
+
+```
+replicaset.extensions/ghost scaled
+```
+
+**Let's verify that we have 3 pods running by issuing a command to get the pods**
+
+```
+$ kubectl get pods | grep ghost 
+```
+**Now we can see that there are 3 pods running in the replia set**
+```
+ghost-f4cf6                                      1/1       Running   0          11m
+ghost-kpqdd                                      1/1       Running   0          4s
+ghost-n26kq                                      1/1       Running   0          4s
+```
+##Delete Service and Replica Set
+
+__1. 	Run the following commands to delete the service and then delete the replica set. Note that the pods are deleted automatically. 
+
+```
+$ kubectl get svc
+```
+**The output will look similar to this**
 
 ```
 
-$ kubectl get pods --namespace=user99-ns
-NAME                         READY     STATUS        RESTARTS   AGE
-my-deploy-6fd857889c-8nvf5   0/1       Terminating   0          17m
-my-deploy-6fd857889c-8pm6x   0/1       Terminating   0          20m
-my-deploy-6fd857889c-dzwlf   0/1       Terminating   0          17m
-my-deploy-6fd857889c-ht7pv   0/1       Terminating   0          21m
-my-deploy-6fd857889c-kkx5k   0/1       Terminating   0          20m
-my-deploy-857bc7b484-4j684   1/1       Running       0          11s
-my-deploy-857bc7b484-mx75q   1/1       Running       0          12s
-my-deploy-857bc7b484-phfct   1/1       Running       0          10s
-my-deploy-857bc7b484-ttspq   1/1       Running       0          13s
-my-deploy-857bc7b484-w27c2   1/1       Running       0          13s
+NAME      TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
+ghost     NodePort   10.0.0.77    <none>        2368:32400/TCP   28m
+
+```
+**Now delete the service s**
+
+```
+$ kubectl delete svc ghost
+```
+
+**The output will look similar to this**
+
+```
+service "ghost" deleted
+```
+**Now let's display the replica set before we delete it**
+
+```
+$ kubectl get rs | grep ghost
+```
+
+**We can see that we have 3 pods running in the ghost replica set**
+
+```
+NAME      DESIRED   CURRENT   READY     AGE
+ghost     3         3         3         11m
 
 ```
 
-To validate that the proper pod is running, do a 'describe' on the deployment or one of the pods and see what image is currently in use...
-
-Let's save the results of our deployment, just in case we want to recreate it
+**Now lets delete the ghost replica set**
 
 ```
-kubectl get deployment my-deploy -o=yaml --export --namespace=user99-ns > ./apache-deploy.yaml
+$ kubectl delete rs ghost
 ```
 
-Now that we've gotten a bit of a feel for working with Kubernetes we can clean up and move on to the next thing!
+**You should see this message below**
 
 ```
-$ kubectl delete deployment my-deploy --namespace=user99-ns
-deployment "my-deploy" deleted
-
+replicaset.extensions "ghost" deleted
 ```
 
+**We can now verify that the replica set and all the pods are deleted**
 
+```
+$ kubectl get pods | grep ghost
+```
 
+**The output not return anything because the replica set was deleted**
+
+## End of lab 3
 ---
