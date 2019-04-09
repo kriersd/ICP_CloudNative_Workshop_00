@@ -49,6 +49,8 @@ From here, if you check your browser and look at the list of available tags in t
 
 From here, we can run the image on our kubernetes cluster.
 
+**Replace "==YOUR-UNIQUE-NAMESPACE==" with the name space given to you by the instructor**
+
 ```
 $ kubectl run hello-node --image=Your-Docker-ID/mynode:v1.0 --port=8080 --namespace=YOUR-UNIQUE-NAMESPACE
 deployment "hello-node" created
@@ -65,6 +67,7 @@ hello-node-77c96d485-qstmk   1/1       Running   0          3m
 
 With the container running, we'll need to expose the applications port before we can access to application.
 
+**Replace "==YOUR-UNIQUE-NAMESPACE==" with the name space given to you by the instructor**
 
 ```
 $ kubectl expose deployment hello-node --type=NodePort  --namespace=YOUR-UNIQUE-NAMESPACE
@@ -77,6 +80,8 @@ kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          5h
 ```
 
 Now that the application is accessible via an external port, we're able to gain access to the services with curl
+
+**Replace "==YOUR-UNIQUE-NAMESPACE==" with the name space given to you by the instructor**
 
 ```  
 $ kubectl get service --namespace=YOUR-UNIQUE-NAMESPACE
