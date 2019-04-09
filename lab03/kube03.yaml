@@ -1,0 +1,15 @@
+# A simple yaml file to create a service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ghost
+  name: ghost
+spec:
+  selector:
+    app: ghost
+  ports:
+  - port: 2368
+    protocol: TCP
+    targetPort: 2368
+  type: NodePort

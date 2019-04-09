@@ -1,0 +1,14 @@
+# A simple yaml file to create a ghost pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ghost
+  labels:
+    app: ghost
+spec:
+  containers:
+    - image: ghost:1.21.5-alpine
+      name: ghost
+      ports:
+      - containerPort: 2368
+        protocol: TCP
