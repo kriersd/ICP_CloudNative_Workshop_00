@@ -12,10 +12,6 @@ The kubectl is a command line tool to communicate with the Kubernetes master nod
 ***	
 **Note:** It is a best practice to use the kubectl version that matches with the Kubernetes. We used the following command to extract kubectl from the IBM Cloud Private containers. 
 
-```
-$ docker run --rm -v $(pwd):/data -e LICENSE=accept ibmcom/icp-inception:2.1.0.3-ee
-   cp -r /usr/local/bin/kubectl /data
-```
 *** 
 
 __1. 	Kubectl must be configured for the environment that it will be executing against. The commands to do this are available from IBM Cloud Private admin console.
@@ -25,8 +21,6 @@ __2. 	Launch your Web Browser.
 __3. 	Enter the URL for the IBM Cloud Private console.
 
 __4.  Login with the credentials you were given by the instructor.
-
-**The IBM Cloud Private Dashboard will be displayed.  Note that there are high level displays for the nodes, storage, deployments and more included for this IBM Cloud Private environment.  These will be discussed in more detail at a later time.**
 
 __5. 	After you into the IBM Cloud Private console , click on the white circle with the black head and shoulders in the far right and select Configure client.
 
@@ -44,7 +38,7 @@ __8. 	Paste the block of commands into the terminal window and verify that they 
 __1. 	Check the Client and Kubernetes version with this command. 
 
 ```	
-$ kubectl get componentstatuses
+$ kubectl get version
 ```
 
 __2. 	Determine if the cluster is healthy with this command.
@@ -61,7 +55,6 @@ $ kubectl get nodes
 **Output will look similar to this:**
 
 ```
-$ kubectl get nodes
 NAME             STATUS   ROLES               AGE   VERSION
 169.62.170.88    Ready    worker              35d   v1.12.4+icp-ee
 169.62.170.91    Ready    management          35d   v1.12.4+icp-ee
@@ -78,27 +71,9 @@ $ kubectl describe node
 **Output of the command will look similar to this.**
 
 ```
-ibmdemo@ubuntuvm1:~$ kubectl describe node 
-Name:           92.168.142.140
+Name:           192.168.142.140
 Roles:           etcd,management,master,proxy,worker
 Labels:         beta.kubernetes.io/arch=amd64
-	 beta.kubernetes.io/os=linux
-	etcd=true
-	kubernetes.io/hostname=192.168.142.140
-	management=true
-	master=true
-	node-role.kubernetes.io/etcd=true
-	node-role.kubernetes.io/management=true
-	node-role.kubernetes.io/master=true
-	node-role.kubernetes.io/proxy=true
-	node-role.kubernetes.io/worker=true
-	proxy=true
-	role=master
-Annotations: node.alpha.kubernetes.io/ttl=0
-                    volumes.kubernetes.io/controller-managed-attach-detach=true
-CreationTimestamp:  Fri, 09 Nov 2018 08:48:05 -0700
-Taints:             <none>
-Unschedulable:      false
 
 ```
 
