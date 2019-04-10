@@ -253,7 +253,7 @@ NAME              STATUS    ROLES                                 AGE       VERS
 __11. 	Run the following command kubectl -n kube-system get pods | grep k8s-master to find the Kubernetes master node. 
 
 ```
-kubectl -n kube-system get pods | grep k8s-master
+$ kubectl -n kube-system get pods | grep k8s-master
 ```
 
 ***Output will look similar to the following***
@@ -262,26 +262,27 @@ kubectl -n kube-system get pods | grep k8s-master
 k8s-master-192.168.142.140                                     3/3       Running     49         25d
 
 ```
-The Kubernetes master node pod name is k8s-master-192.168.142.140 and, as the name suggests, it is running on 192.168.142.140. Note 3/3 in the Ready column. This signifies that there are three containers in this pod and all three are running.
+The Kubernetes master node pod name is k8s-master-192.168.142.140 and, as the name suggests, it is running on 192.168.142.140. Note 3/3 in the Ready column. This signifies that there are three containers in this pod and all three are running. **Take note of your IP address, you will need it in later steps**  
 
-__12. 	Let's check the containers inside this pod k8s-master-192.168.142.140. Run command kubectl -n kube-system get pod k8s-master-192.168.142.140 
+**Note: Replace ###.###.###.### with your ip address**
+
+__12. 	Let's check the containers the master pod k8s-master-*###.###.###.###*. 
 
 ***Note your pod name will likely be different. Use the name of the pid from the previous command***
 
 ```
-kubectl -n kube-system get pod k8s-master-192.168.142.140 
+$ kubectl -n kube-system get pod k8s-master-###.###.###.### 
 ```
 ***Output will look similar to the following.***
  
 ```
-$ kubectl -n kube-system get pod k8s-master-192.168.142.140 
 NAME                         READY     STATUS    RESTARTS   AGE
 k8s-master-192.168.142.140   3/3       Running   49         25d
 ```
-__5. 	The kubectl is a client that sends REST API to the API server and parses the JSON return output. Add -o json switch in the above command to see the JSON output from the API server
+__13. 	The kubectl is a client that sends REST API to the API server and parses the JSON return output. Add -o json switch in the above command to see the JSON output from the API server
 
 ```
-$ kubectl -n kube-system get pod k8s-master-192.168.142.140 -o json
+$ kubectl -n kube-system get pod k8s-master-is-###.###.###.### -o json
 ```
 ***Output will look similar to the following.***
 
@@ -582,19 +583,19 @@ $ kubectl -n kube-system get pod k8s-master-192.168.142.140 -o json
 
 ## Kubernetes etcd database
 
-__6. 	The fourth component of Kubernetes is the etcd database that holds the state of the cluster. The etcd container runs in a separate pod. Run the following kubectl -n kube-system get pods | grep -i etcd 
+__1. 	The fourth component of Kubernetes is the etcd database that holds the state of the cluster. The etcd container runs in a separate pod. Run the following kubectl -n kube-system get pods | grep -i etcd 
 
 ```
 $ kubectl -n kube-system get pods | grep -i etcd 
 ```
-***Output will look similar to this below***
+***Output will look similar to this below reflecting your IP address***
 
 ```
 k8s-etcd-192.168.142.140                                       1/1       Running     10         25d
 
 ```
 
-__7. 	Run the command kubectl -n kube-system get pods -o wide to check the list of pods running on the master node. 
+__2. 	Run the command kubectl -n kube-system get pods -o wide to check the list of pods running on the master node. 
 
 ```
 kubectl -n kube-system get pods -o wide
@@ -609,7 +610,7 @@ A proxy node transmits external requests to the services created inside the clus
 
 ## Kubernetes Worker Node
 
-__8. 	In this environment there is only a single node which is running the master, management and worker node roles. We have not deployed any workload in the default name space as evident from the kubectl get pods -n=default  which at this time does not return anything. 
+__1. 	In this environment there is only a single node which is running the master, management and worker node roles. We have not deployed any workload in the default name space as evident from the kubectl get pods -n=default  which at this time does not return anything. 
 
 ```
 $ kubectl get pods -n=default
@@ -635,10 +636,10 @@ Similarly, in this environment the management node is also part of our single no
 
 If we were running in a multi-node environment with a separate management node on 192.168.142.101, the command below could be used to check the list of pods running on the management node. This output is for example only.
 
-**Note: You may need to replace the ip address with your management ip address**
+**Note: You will need to replace the ip address with your management ip address which you noted earlier**
 
 ```
-$ kubectl -n kube-system get pods -o wide | grep 192.168.142.101
+$ kubectl -n kube-system get pods -o wide | grep ###.###.###.###
 ```
 **This is some example output from the above command**
 
@@ -663,7 +664,7 @@ nginx-ingress-lb-amd64-x4qxb                          1/1       Running   1     
 
 In this section we'll deploy a containerized application to IBM Cloud Private. We will be deploying a popular bloging platform called Ghost. Ghost is written in Node.JS and uses SQLLite as it's backend database. 
 
-__1. 	Downlaod the lab03 files and place them in a directory of your choice. We ill refer to this directory as the ==**"lab03"**== directory.
+__1. 	Download the lab03 files and place them in a directory of your choice. We ill refer to this directory as the ==**"lab03"**== directory.
 
 * Lab03 - Directory
 	*  kube01.yaml - deployment definiton
@@ -675,7 +676,7 @@ __2. 	Open a new terminal window and navigate to the lab03 directory
 __3. 	Run cat kube01.yaml to review the manifest file
 	
 ```
-cat kube01.yaml
+$ cat kube01.yaml
 ```
 
 
@@ -721,7 +722,7 @@ __1. 	Navigate to the lab03 directory within your terminal window.
 __2. 	Run the following kubectl command to create the pod on IBM Cloud Private. 
 
 ```
-Run kubectl apply -f kube01.yaml
+$ kubectl apply -f kube01.yaml
 ```
 **You should see the following message**
 
@@ -734,7 +735,7 @@ pod/ghost created
 __3. 	 Run kubectl get pod command with a grep search to find only the pod we just deployed. 
 
 ```
-kubectl get pod | grep ghost
+$ kubectl get pod | grep ghost
 ```
 
 **If successful you should see the following message**
