@@ -31,7 +31,7 @@ The kubectl command line client should be configured.. just to check type
 
 ```
 
-$ kubectl get deploy --namespace=default
+$ $ kubectl get componentstatuses
 
 ```
 
